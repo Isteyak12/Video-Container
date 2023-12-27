@@ -1,20 +1,14 @@
-# Use a base image with Python installed
-FROM python:3.9
+# Use an official Python runtime as a parent image
+FROM python:3
 
-# Set working directory in the container
+# Set the working directory in the container
 WORKDIR /app
 
-# Install necessary dependencies
-RUN apt-get update && apt-get install -y \
-    python3-opencv \
-    # Additional dependencies may include:
-    # libsm6 libxext6 libxrender-dev
-    # Other libraries required by OpenCV or dlib
-    && pip install opencv-python-headless
+# Copy the Python script into the container at /app
+COPY your_script_name.py /app/
 
+# Install OpenCV and other dependencies
+RUN pip install opencv-python-headless
 
-# Copy your face detection app code into the container
-COPY . /app
-
-# Set the command to run your app
+# Run the Python script when the container launches
 CMD ["python", "app.py"]

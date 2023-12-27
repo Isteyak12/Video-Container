@@ -1,4 +1,6 @@
 import cv2
+import tkinter as tk
+from PIL import Image, ImageTk
 
 # Load the pre-trained Haar Cascade face detector
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
@@ -6,27 +8,36 @@ face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_fronta
 # Access the webcam (you can specify a different index if you have multiple cameras)
 cap = cv2.VideoCapture(0)
 
-while True:
-    # Read each frame from the webcam
+def capture_image():
     ret, frame = cap.read()
+    cv2.imwrite('captured_image.jpg', frame)  # Save the frame as an image
+    print("Image captured!")
 
-    # Convert the frame to grayscale for face detection
+def show_frame():
+    ret, frame = cap.read()
     gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-    # Detect faces in the frame
     faces = face_cascade.detectMultiScale(gray_frame, scaleFactor=1.1, minNeighbors=5)
-
-    # Draw rectangles around detected faces
     for (x, y, w, h) in faces:
         cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 3)
+    cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    img = Image.fromarray(cv2image)
+    img = ImageTk.PhotoImage(image=img)
+    panel.img = img
+    panel.config(image=img)
+    panel.after(10, show_frame)
 
-    # Display the frame with detected faces
-    cv2.imshow('Face Detection', frame)
+root = tk.Tk()
+root.title("Capture Image")
 
-    # Exit loop when 'q' is pressed
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+panel = tk.Label(root)
+panel.pack(padx=10, pady=10)
 
-# Release the webcam and close all OpenCV windows
+capture_button = tk.Button(root, text="Capture Image", command=capture_image)
+capture_button.pack(padx=10, pady=5)
+
+show_frame()  # Start displaying the webcam feed
+
+root.mainloop()
+
+# Release the webcam
 cap.release()
-cv2.destroyAllWindows()
