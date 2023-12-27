@@ -1,14 +1,10 @@
-# Use an official Python runtime as a parent image
-FROM python:3
+FROM python:3.9
 
-# Set the working directory in the container
 WORKDIR /app
 
-# Copy the Python script into the container at /app
-COPY your_script_name.py /app/
+COPY requirements.txt /app/
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Install OpenCV and other dependencies
-RUN pip install opencv-python-headless
+COPY . /app/
 
-# Run the Python script when the container launches
 CMD ["python", "app.py"]
